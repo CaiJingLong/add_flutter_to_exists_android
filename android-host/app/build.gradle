@@ -22,10 +22,11 @@ android {
     }
 }
 
+def aarDir = "${rootProject.projectDir.path}/../flutter-aar"
+
 repositories {
-//    mavenCentral()
     flatDir {
-        dirs "${rootDir.path}/libs"
+        dirs aarDir
     }
 }
 
@@ -36,7 +37,16 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-    implementation 'top.kikt.flutter_lib:module_example:1.0.2'
-//    implementation(name: 'flutter-release', ext: 'aar')
-    implementation(name: 'shared_preferences-release', ext: 'aar')
+
+    def file = new File(aarDir)
+    file.listFiles(new FilenameFilter() {
+        @Override
+        boolean accept(File dir, String name) {
+            return name.endsWith("aar")
+        }
+    }).each { f ->
+        def aar = f.name.split("\\.").first()
+        println("f.name = ${f.name} , aar = $aar")
+        api(name: f.name.split("\\.").first(), ext: 'aar')
+    }
 }
